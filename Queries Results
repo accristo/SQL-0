@@ -1,0 +1,48 @@
+AQ1
+Row	f0_	
+1	  2627
+
+AQ2
+Row	name	total_number	
+1	  Mary  59282
+2	  Linda 41464
+3	  Barbara 38274
+
+AQ3
+Row	year	name	ranking	
+1	  2019  Charlotte 11
+
+AQ3*
+Row	rnk	year	
+1	  11  2019
+
+
+AQ4
+Row	name	number	
+1	  Sophia 96
+
+AQ5
+Row	f0_	
+1	  156
+
+AQ6
+Row	f0_	Percentage	
+1	  a   28.195101872813336
+
+AQ6*
+Row	lastletter	Percentage	
+1	  a           28.195101872813336
+
+
+AQ7
+Row	year	percentage_growth	
+1	  2007  null
+2	  2008  -5.305416161965738
+3	  2009  -8.420437102550983
+4	  2010  -6.856093862239604
+5	  2011  -5.40274207369323
+6	  2012  -2.5771094705376147
+7	  2013  -4.4258484425848446
+8	  2014  -4.572429224632747
+9	  2015  -2.574166581710674
+10	2016  -2.903782765656883
