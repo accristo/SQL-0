@@ -89,14 +89,6 @@ order by Percentage desc
 limit 1
 
 Q6**
-select count(*) portion
-            from (select distinct name
-                  from bigquery-public-data.usa_names.usa_1910_current
-                   where year >= 1990 and year <= 1999)
-group by right(name,1)
-order by 1 desc
-limit 1
-
 with cte as (select count(*) portion,right(name,1)
             from (select distinct name
                   from bigquery-public-data.usa_names.usa_1910_current
