@@ -1,0 +1,121 @@
+Q1
+select count(distinct(name))
+from bigquery-public-data.usa_names.usa_1910_current
+where gender="M" and year=1984
+
+Q2
+select name, sum(number) total_number
+from bigquery-public-data.usa_names.usa_1910_current
+where year=1945 and gender="F"
+group by name
+order by sum(number) desc
+limit 3
+
+Q3
+select *
+from (select year, name, rank() over (order by sum(number) desc) ranking
+from bigquery-public-data.usa_names.usa_1910_current
+where year= (select year
+from bigquery-public-data.usa_names.usa_1910_current
+where name="Charlotte"
+group by year
+order by sum(number) desc
+limit 1)
+group by name, year
+order by ranking)
+where name ="Charlotte"
+
+Q3*
+select rnk,year
+from (select *,rank() over (partition by year order by total desc) rnk
+      from (select distinct name,sum(number) total,year
+            from bigquery-public-data.usa_names.usa_1910_current
+            group by year,name order by year,total desc
+            )
+     )
+where name = 'Charlotte'
+order by 1 asc
+limit 1;
+
+Q4
+select name, number
+from bigquery-public-data.usa_names.usa_1910_current
+where state = (select state 
+from bigquery-public-data.geo_us_boundaries.states
+where  state_fips_code = "44") and year = 2011
+order by number desc
+limit 1
+
+Q5
+select sum(number)
+from bigquery-public-data.usa_names.usa_1910_current
+where state in (select state 
+from bigquery-public-data.geo_us_boundaries.states
+where area_water_meters between 130724375 and 1550236199) and name="Jamie" and year = 1988 and gender="M"
+
+Q6
+select right(name,1), count(right(name,1))*100/sum(count(right(name,1))) over() Percentage
+from (select distinct(name)
+from bigquery-public-data.usa_names.usa_1910_current
+where year between 1990 and 1999)
+group by right(name,1)
+order by Percentage desc
+limit 1
+
+Q6*
+select lastletter, letterfreq*100/(select sum(letterfreq) from (select right(diffnames,1) lastletter, count(right(diffnames,1)) letterfreq
+from (select distinct(name) diffnames
+from bigquery-public-data.usa_names.usa_1910_current
+where year between 1990 and 1999)
+group by lastletter
+order by letterfreq desc)) as Percentage
+from (select right(diffnames,1) lastletter, count(right(diffnames,1)) letterfreq
+from (select distinct(name) diffnames
+from bigquery-public-data.usa_names.usa_1910_current
+where year between 1990 and 1999)
+group by lastletter
+order by letterfreq desc)
+order by Percentage desc
+limit 1
+
+Q6*
+select lastletter, letterfreq*100/ sum(letterfreq) over() Percentage
+from (select right(diffnames,1) lastletter, count(right(diffnames,1)) letterfreq
+from (select distinct(name) diffnames
+from bigquery-public-data.usa_names.usa_1910_current
+where year between 1990 and 1999)
+group by lastletter)
+order by Percentage desc
+limit 1
+
+Q6**
+select count(*) portion
+            from (select distinct name
+                  from bigquery-public-data.usa_names.usa_1910_current
+                   where year >= 1990 and year <= 1999)
+group by right(name,1)
+order by 1 desc
+limit 1
+
+with cte as (select count(*) portion,right(name,1)
+            from (select distinct name
+                  from bigquery-public-data.usa_names.usa_1910_current
+                   where year >= 1990 and year <= 1999)
+            group by right(name,1)
+            order by 1 desc
+            limit 1),
+
+ctex as (select count(distinct name) total
+         from bigquery-public-data.usa_names.usa_1910_current
+         where year >= 1990 and year <= 1999)
+
+select portion,portion*100/total 
+from cte, ctex;
+
+Q7
+select year, (sams-prevsams)*100/prevsams as percentage_growth
+from(select year, sum(number) sams, lag(sum(number),1) over(order by year asc) prevsams
+from bigquery-public-data.usa_names.usa_1910_current
+where left(name,3)="Sam" and year between 2007 and 2016
+group by year
+order by year asc)
